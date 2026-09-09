@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ title }}</title>
+  <style>
+    body{font-family:system-ui,-apple-system,sans-serif;margin:0;background:#f6f7f9;color:#222}
+    main{max-width:1100px;margin:auto;padding:24px}
+    .note{color:#666;margin-bottom:24px}
+    .card{background:white;border:1px solid #ddd;border-radius:12px;padding:16px;margin:12px 0}
+    .subject{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+    .meta{display:grid;grid-template-columns:110px 1fr;gap:5px 12px}
+    .error{margin-top:10px;color:#8a2600;background:#fff4ef;padding:8px;border-radius:8px}
+    .empty{background:white;padding:30px;border-radius:12px;text-align:center}
+    a{color:inherit}
+  </style>
+</head>
+<body>
+<main>
+  <h1>{{ title }}</h1>
+  <div class="note">Read-only view of messages currently waiting in the Postfix queue.</div>
+
+  {% if not messages %}
+    <div class="empty">The queue is empty.</div>
+  {% endif %}
+
+  {% for m in messages %}
+    <div class="card">
+      <div class="subject"><a href="/message/{{ m.id }}">{{ m.subject }}</a></div>
+      <div class="meta">
+        <div>From</div><div>{{ m.sender }}</div>
+        <div>To</div><div>{{ m.recipients|join(', ') }}</div>
+        <div>Queue ID</div><div><code>{{ m.id }}</code></div>
+        <div>Size</div><div>{{ m.message_size or '?' }} bytes</div>
+      </div>
+      {% if m.delay_reason %}
+        <div class="error">{{ m.delay_reason }}</div>
+      {% endif %}
+    </div>
+  {% endfor %}
+</main>
+</body>
+</html>
