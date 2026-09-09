@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ subject }} - {{ title }}</title>
+  <style>
+    body{font-family:system-ui,-apple-system,sans-serif;margin:0;background:#f6f7f9;color:#222}
+    main{max-width:1000px;margin:auto;padding:24px}
+    .box{background:white;border:1px solid #ddd;border-radius:12px;padding:18px;margin:14px 0}
+    .meta{display:grid;grid-template-columns:90px 1fr;gap:6px 12px}
+    pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#fafafa;padding:14px;border-radius:8px}
+    .warn{background:#fff6dd;padding:10px;border-radius:8px}
+    .attach{padding:8px 0;border-bottom:1px solid #eee}
+    a{color:#174ea6}
+  </style>
+</head>
+<body>
+<main>
+  <p><a href="/">← Back to queue</a></p>
+  <h1>{{ subject }}</h1>
+
+  <div class="box">
+    <div class="meta">
+      <div>From</div><div>{{ sender }}</div>
+      <div>To</div><div>{{ to }}</div>
+      {% if cc %}<div>Cc</div><div>{{ cc }}</div>{% endif %}
+      <div>Date</div><div>{{ date }}</div>
+      <div>Queue ID</div><div><code>{{ queue_id }}</code></div>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>Message</h2>
+    {% if text_body %}
+      <pre>{{ text_body }}</pre>
+    {% elif html_body %}
+      <div class="warn">HTML-only message. For safety, HTML is shown as source rather than executed.</div>
+      <pre>{{ html_body }}</pre>
+    {% else %}
+      <p>No readable text body found.</p>
+    {% endif %}
+  </div>
+
+  {% if attachments %}
+    <div class="box">
+      <h2>Attachments</h2>
+      {% for a in attachments %}
+        <div class="attach"><a href="/message/{{ queue_id }}/attachment/{{ a.index }}">{{ a.filename }}</a> — {{ a.content_type }}, {{ a.size }} bytes</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="box">
+    <details>
+      <summary>Headers</summary>
+      <pre>{% for k,v in headers %}{{ k }}: {{ v }}
+{% endfor %}</pre>
+    </details>
+    <details>
+      <summary>Raw message</summary>
+      <pre>{{ raw }}</pre>
+    </details>
+  </div>
+</main>
+</body>
+</html>
